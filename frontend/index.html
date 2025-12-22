@@ -2,36 +2,62 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Document</title>
+  <title>Importação de PDF</title>
   <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
 
-  <h1>Importação de PDF</h1>
+    <div class="container">
+        <div class="header">
+            <div>
+            <h1>Importação de PDF</h1>
+            <p class="sub">Envie um PDF, revise os dados e exporte para Excel.</p>
+            </div>
 
-  <input type="file" id="pdfInput" accept="application/pdf" />
-  <button id="uploadBtn">Enviar PDF</button>
+            <div class="row">
+            <button class="btn" id="exportBtn">Exportar Excel</button>
+            </div>
+        </div>
 
-  <button id="exportBtn">Exportar Excel</button>
+        <div class="card">
+            <div class="row">
+            <input type="file" id="pdfInput" accept="application/pdf">
+            <button class="btn btn-primary" id="uploadBtn">Enviar PDF</button>
+            <span class="badge" id="statusBadge">Pronto</span>
+            </div>
+        </div>
 
-  <table id="dataTable">
-    <thead>
-      <tr>
-        <th>Tipo</th>
-        <th>Descrição</th>
-        <th>Valor</th>
-        <th>Data</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+        <div class="table-wrap">
+            <table id="dataTable">
+            <thead>
+                <tr>
+                <th>Tipo</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Data</th>
+                <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            </table>
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/upload.js"></script>
-  <script src="js/table.js"></script>
-  <script src="js/export.js"></script>
+            <div class="empty" id="emptyState">Nenhum dado carregado ainda.</div>
+        </div>
+    </div>
+
+
+
+
+    <!-- SCRIPTS EM JS -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/upload.js"></script>
+    <script src="js/export.js"></script>
+
+    <!-- ordem correta -->
+    <script src="js/icons.js"></script>
+    <script src="js/actions.js"></script>
+    <script src="js/table.js"></script>
 
 </body>
 </html>
