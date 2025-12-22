@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Document</title>
+  <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+  <h1>Importação de PDF</h1>
+
+  <input type="file" id="pdfInput" accept="application/pdf" />
+  <button id="uploadBtn">Enviar PDF</button>
+
+  <button id="exportBtn">Exportar Excel</button>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Data</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/upload.js"></script>
+  <script src="js/table.js"></script>
+  <script src="js/export.js"></script>
+
+</body>
+</html>
