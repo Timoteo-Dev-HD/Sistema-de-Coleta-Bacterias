@@ -15,7 +15,7 @@ def create_app():
     # Importar os Models
     from src.models.usuario_model import User
     
-    
     # Registar as routes
+    
 
     return app
