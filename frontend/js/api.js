@@ -1,3 +1,3 @@
 const api = axios.create({
-  baseURL: "http://localhost:8000", // backend FastAPI
+  baseURL: "http://localhost:5000", // ajuste se necessário
 });

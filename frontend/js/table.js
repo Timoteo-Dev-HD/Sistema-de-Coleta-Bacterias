@@ -1,36 +1,32 @@
-function renderTable(data) {
-  const tbody = document.querySelector("#dataTable tbody");
-  const emptyState = document.getElementById("emptyState");
+let tableData = [];
 
+function renderTable(data) {
+  tableData = data;
+
+  const tbody = document.getElementById("tableBody");
   tbody.innerHTML = "";
 
-  if (!data.length) {
-    emptyState.style.display = "block";
-    return;
-  }
+  data.forEach((row, index) => {
+    const tr = document.createElement("tr");
 
-  emptyState.style.display = "none";
-
-  data.forEach(item => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${item.tipo}</td>
-      <td>${item.descricao}</td>
-      <td>${item.valor}</td>
-      <td>${item.data}</td>
-      <td>
-        <div class="actions">
-          <button class="btn btn-icon" title="Editar" onclick="editRow(${item.id})">
-            ${iconEdit()}
-          </button>
-          <button class="btn btn-icon btn-danger" title="Deletar" onclick="deleteRow(${item.id})">
-            ${iconDelete()}
-          </button>
-        </div>
+    tr.innerHTML = `
+      <td>${row.paciente}</td>
+      <td>${row.data_admissao}</td>
+      <td>${row.data_da_coleta}</td>
+      <td>${row.data_ence ?? "Vazio/Null"}</td>
+      <td>${row.tempo_colet ?? "Vazio/Null"}</td>
+      <td>${row.diagnostico}</td>
+      <td>${row.desfecho ?? ""}</td>
+      <td class="actions">
+        <button class="btn-icon edit" onclick="editRow(${row.id})">
+          ${iconEdit()}
+        </button>
+        <button class="btn-icon delete" onclick="deleteRow(${row.id})">
+          ${iconDelete()}
+        </button>
       </td>
     `;
 
-    tbody.appendChild(row);
+    tbody.appendChild(tr);
   });
 }
