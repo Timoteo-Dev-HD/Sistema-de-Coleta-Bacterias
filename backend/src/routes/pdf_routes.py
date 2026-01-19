@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+from datetime import datetime
+
 from src.utils.util import parse_pdf, save_file, parse_date 
 from src.settings.extensions import db
 from src.models.registry_model import Registry
@@ -24,6 +26,8 @@ def upload_pdf():
 
         salvos = []
 
+        data_created = datetime.now()
+
         for item in registros:
             
             #print(item["paciente"])
@@ -35,7 +39,10 @@ def upload_pdf():
                 data_encerramento=parse_date(item["data_ence"]),
                 tempo_coletar=item["tempo_colet"],
                 diagnostico=item["diagnostico"],
-                desfecho=item["desfecho"]
+                desfecho=item["desfecho"],
+                
+                
+                data_created=data_created
             )
 
             db.session.add(registry)
