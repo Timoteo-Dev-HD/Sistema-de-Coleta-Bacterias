@@ -13,5 +13,10 @@ class Registry(db.Model):
     diagnostico = db.Column(db.String(255), nullable=False)
     desfecho = db.Column(db.String(255), nullable=True)
     
+    
+    # Coluna de data que o registro foi feito na aplicação
+    data_upload = db.Column(db.Date, nullable=True)
+    
+    
     def __repr__(self):
         return f"Registry: {self.nome_paciente} - {self.data_admissao}."
