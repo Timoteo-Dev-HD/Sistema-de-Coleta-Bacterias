@@ -26,7 +26,7 @@ def upload_pdf():
 
         salvos = []
 
-        data_created = datetime.now()
+        data_criacao = datetime.now().date()
 
         for item in registros:
             
@@ -42,7 +42,7 @@ def upload_pdf():
                 desfecho=item["desfecho"],
                 
                 
-                data_created=data_created
+                data_criacao=data_criacao
             )
 
             db.session.add(registry)

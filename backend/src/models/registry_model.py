@@ -15,7 +15,7 @@ class Registry(db.Model):
     
     
     # Coluna de data que o registro foi feito na aplicação
-    data_upload = db.Column(db.Date, nullable=True)
+    data_criacao = db.Column(db.Date, nullable=True)
     
     
     def __repr__(self):
