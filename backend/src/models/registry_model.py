@@ -6,8 +6,8 @@ class Registry(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nome_paciente = db.Column(db.String(255), nullable=False)
-    data_admissao = db.Column(db.Date, nullable=False)
-    data_da_coleta = db.Column(db.Date, nullable=False)
+    data_admissao = db.Column(db.Date, nullable=True)
+    data_da_coleta = db.Column(db.Date, nullable=True)
     data_encerramento = db.Column(db.Date, nullable=True)
     tempo_coletar = db.Column(db.Integer, nullable=True)
     diagnostico = db.Column(db.String(255), nullable=True)
