@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify
 from datetime import datetime
+import traceback
 
 from src.utils.util import parse_pdf, save_file, parse_date 
+from src.utils.util import parse_pdf_procedimentos_anti
+from src.utils.util import apply_antibiogram_to_registry
 from src.settings.extensions import db
 from src.models.registry_model import Registry
-import traceback
+
 
 pdf_bp = Blueprint("pdf", __name__)
 
@@ -21,38 +24,41 @@ def upload_pdf():
         path = save_file(file)
         print("💾 Arquivo salvo em:", path)
 
-        registros = parse_pdf(path)
+        registros = parse_pdf_procedimentos_anti(path)
         print("📊 Registros extraídos:", len(registros))
 
         salvos = []
-
+        total = 0
         data_criacao = datetime.now().date()
 
-        for item in registros:
-            
-            #print(item["paciente"])
-            
-            registry = Registry(
-                nome_paciente=item["paciente"],
-                data_admissao=parse_date(item["data_admissao"]),
-                data_da_coleta=parse_date(item["data_coleta"]),
-                data_encerramento=parse_date(item["data_ence"]),
-                tempo_coletar=item["tempo_colet"],
-                diagnostico=item["diagnostico"],
-                desfecho=item["desfecho"],
-                
-                
-                data_criacao=data_criacao
-            )
+        for os_item in registros:
+            for proc in os_item["procedimentos"]:
 
-            db.session.add(registry)
-            salvos.append(registry)
+                registry = Registry(
+                    nome_paciente=os_item["paciente"],
+                    local=os_item.get("unidade"),
+                    material_coletada=proc.get("material"),
+                    microorganismo=proc.get("microorganismo"),
+                    data_da_coleta=parse_date(proc.get("data_coleta")),
+                    data_admissao=parse_date(proc.get("data_coleta")),
+                    data_criacao=data_criacao
+                )
+
+                # 👉 AQUI ENTRA O MAPA DE ANTIBIÓTICOS
+                apply_antibiogram_to_registry(
+                    registry,
+                    proc.get("antibiograma", [])
+                )
+
+                db.session.add(registry)
+                total += 1
 
         db.session.commit()
-        print(f"💾 {len(salvos)} registros salvos no banco")
 
-        # opcional: retornar o que foi salvo
-        return jsonify({"salvos": len(salvos)}), 201
+        return jsonify({
+            "status": "ok",
+            "registros_salvos": total
+        }), 201
 
     except Exception as e:
         db.session.rollback()
