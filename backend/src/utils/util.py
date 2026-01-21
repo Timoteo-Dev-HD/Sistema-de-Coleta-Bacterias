@@ -123,3 +123,142 @@ def parse_pdf(pdf_path):
 
     return registros
 
+
+
+import re
+from pypdf import PdfReader
+
+ANTIBIOTIC_REGEX = re.compile(
+    r"^([A-Za-zÀ-ÿ\-\/]+)\s+(Sensível|Resistente|Intermediário|Não)\s+(.+)$"
+)
+
+def parse_pdf_procedimentos_anti(pdf_path):
+    reader = PdfReader(pdf_path)
+
+    registros = []
+    current_os = None
+    current_proc = None
+    current_micro = None
+
+    for page in reader.pages:
+        text = page.extract_text()
+        if not text:
+            continue
+
+        lines = [l.strip() for l in text.split("\n") if l.strip()]
+
+        for line in lines:
+
+            # 🔹 NOVA O.S.
+            if line.startswith("O.S.:"):
+                current_os = {
+                    "procedimentos": []
+                }
+                registros.append(current_os)
+
+                current_proc = None
+                current_micro = None
+
+                current_os["os"] = re.search(r"O\.S\.\:\s*([^\s]+)", line).group(1)
+                current_os["paciente"] = re.search(r"Paciente:\s*(.+)", line).group(1)
+
+            # 🔹 Dados do paciente
+            elif line.startswith("Sexo:") and current_os:
+                current_os["sexo"] = "Feminino" if "Feminino" in line else "Masculino"
+
+            elif line.startswith("Unidade coleta:") and current_os:
+                current_os["unidade"] = line.replace("Unidade coleta:", "").strip()
+
+            # 🔹 NOVO PROCEDIMENTO
+            elif line.startswith("Procedimento:") and current_os:
+                current_proc = {
+                    "antibiograma": []
+                }
+                current_os["procedimentos"].append(current_proc)
+
+                current_micro = None
+
+                current_proc["procedimento"] = line.replace("Procedimento:", "").strip()
+
+            elif line.startswith("Material:") and current_proc:
+                # Exemplo:
+                # "Material: Urina de Jato Médio Data coleta: 19/12/2025 18:12:20"
+                content = line.replace("Material:", "").strip()
+
+                if "Data coleta:" in content:
+                    material, data_coleta = content.split("Data coleta:", 1)
+                    current_proc["material"] = material.strip()
+                    current_proc["data_coleta"] = data_coleta.strip()
+                else:
+                    current_proc["material"] = content
+
+
+            # 🔹 Microrganismo
+            elif line.startswith("Grupo: Microrganismos Resultado:") and current_proc:
+                current_micro = line.replace(
+                    "Grupo: Microrganismos Resultado:", ""
+                ).replace("~", "").strip()
+
+                current_proc["microorganismo"] = current_micro
+
+            # 🔹 ANTIBIÓTICOS
+            else:
+                match = ANTIBIOTIC_REGEX.match(line)
+                if match and current_proc and current_micro:
+                    current_proc["antibiograma"].append({
+                        "antimicrobiano": match.group(1),
+                        "classificacao": match.group(2),
+                        "mic": match.group(3)
+                    })
+
+    return registros
+
+
+
+
+def apply_antibiogram_to_registry(registry, antibiograma):
+    """
+    antibiograma = [
+      {antimicrobiano, classificacao, mic}
+    ]
+    """
+
+    MAP = {
+        "Amicacina": "amicacina",
+        "Ampicilina": "ampicilina",
+        "Amoxicilina": "amoxicilina",
+        "Amoxicilina-Clavulanato": "amoxicilina_clavulanato",
+        "Cefalexina": "cefalexina",
+        "Cefepima": "cefepime",
+        "Ceftazidima": "ceftazidime",
+        "Ceftriaxona": "ceftriaxone",
+        "Cefuroxima": "cefuroxime",
+        "Ciprofloxacina": "ciprofloxacino",
+        "Ertapenem": "ertapenem",
+        "Gentamicina": "gentamicina",
+        "Imipenem": "imipenem",
+        "Levofloxacina": "levofloxacino",
+        "Meropenem": "meropenem",
+        "Norfloxacina": "norfloxacina",
+        "Piperacilina-Tazobactam": "piperacilina_tazobactam",
+        "Polimixina B": "polimixina_b",
+        "Trimetoprim-Sulfametoxazol": "trimetoprim_sulfametoxazol",
+        "Vancomicina": "vancomicina",
+        "Linezolid": "linezolida",
+        "Clindamicina": "clindamicina",
+        "Daptomicina": "daptomicina",
+        "Eritromicina": "eritromicina",
+        "Nitrofurantoina": "nitrofurantoina",
+        "Aztreonam": "aztreonam",
+        "Ceftazidima-Avibactam": "ceftazidima_avibactam",
+    }
+
+    for item in antibiograma:
+        coluna = MAP.get(item["antimicrobiano"])
+        if coluna:
+            # exemplo: "Sensível <=4"
+            setattr(
+                registry,
+                coluna,
+                f'{item["classificacao"]} {item["mic"]}'
+            )
