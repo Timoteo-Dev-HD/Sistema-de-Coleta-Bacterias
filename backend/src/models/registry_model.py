@@ -16,7 +16,7 @@ class Registry(db.Model):
     # Novos dados clínicos
     notificacao = db.Column(db.String(4), nullable=True)
     dialise = db.Column(db.String(4), nullable=True)
-    material_coletada = db.Column(db.String(50), nullable=True)
+    material_coletada = db.Column(db.String(255), nullable=True)
     microorganismo = db.Column(db.String(255), nullable=True)
     local = db.Column(db.String(50), nullable=True)
 
