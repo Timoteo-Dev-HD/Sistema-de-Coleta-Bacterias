@@ -1,8 +1,9 @@
 async function loadRegistries() {
   try {
     const response = await api.get("/registry");
-    renderTable(response.data);
     
+    allRecords = response.data;
+    renderRecords(allRecords);
 
   } catch (err) {
     console.error(err);

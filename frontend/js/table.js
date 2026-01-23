@@ -1,32 +1,79 @@
-let tableData = [];
+let recordsData = [];
 
-function renderTable(data) {
-  tableData = data;
+function renderRecords(data) {
+  recordsData = data;
 
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = "";
+  const container = document.getElementById("recordsContainer");
+  const emptyState = document.getElementById("emptyState");
 
-  data.forEach((row, index) => {
-    const tr = document.createElement("tr");
+  container.innerHTML = "";
 
-    tr.innerHTML = `
-      <td>${row.paciente}</td>
-      <td>${row.data_admissao}</td>
-      <td>${row.data_da_coleta}</td>
-      <td>${row.data_ence ?? "Vazio/Null"}</td>
-      <td>${row.tempo_colet ?? "Vazio/Null"}</td>
-      <td>${row.diagnostico}</td>
-      <td>${row.desfecho ?? ""}</td>
-      <td class="actions">
-        <button class="btn-icon edit" onclick="editRow(${row.id})">
-          ${iconEdit()}
-        </button>
-        <button class="btn-icon delete" onclick="deleteRow(${row.id})">
-          ${iconDelete()}
-        </button>
-      </td>
+  if (!data || data.length === 0) {
+    emptyState.style.display = "block";
+    return;
+  }
+
+  emptyState.style.display = "none";
+
+  data.forEach((row) => {
+    const card = document.createElement("div");
+    card.className = "record-card";
+
+    card.innerHTML = `
+      <div class="record-header">
+        <strong>${row.nome_paciente}</strong>
+        <div class="actions">
+          <button class="btn-icon" onclick="viewRow(${row.id})">
+            ${iconView()}
+          </button>
+          <button class="btn-icon edit" onclick="editRow(${row.id})">
+            ${iconEdit()}
+          </button>
+          <button class="btn-icon delete" onclick="deleteRow(${row.id})">
+            ${iconDelete()}
+          </button>
+        </div>
+
+      </div>
+
+      <div class="record-body">
+        <div><span>Data Admissão:</span> ${formatDate(row.data_admissao)}</div>
+        <div><span>Data da Coleta:</span> ${formatDate(row.data_da_coleta)}</div>
+        <div><span>Data Encerramento:</span> ${formatDate(row.data_ence)}</div>
+        <div><span>Tempo Coleta:</span> ${formatDate(row.tempo_colet)}</div>
+        <div><span>Diagnóstico:</span> ${row.diagnostico}</div>
+        <div><span>Desfecho:</span> ${row.desfecho ?? "—"}</div>
+        <div><span>Data de Inserção do dado:</span> ${formatDate(row.data_criacao)}</div>
+      </div>
     `;
 
-    tbody.appendChild(tr);
+    container.appendChild(card);
   });
 }
+
+
+function filterRecords(query) {
+  const q = query.trim().toLowerCase();
+
+  // 🔹 Se o campo estiver vazio, mostra tudo
+  if (!q) {
+    renderRecords(allRecords);
+    return ;
+  }
+
+  const filtered = allRecords.filter(r =>
+    r.nome_paciente.toLowerCase().includes(q)
+  );
+
+  renderRecords(filtered);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("searchInput");
+
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", (e) => {
+    filterRecords(e.target.value);
+  });
+});
