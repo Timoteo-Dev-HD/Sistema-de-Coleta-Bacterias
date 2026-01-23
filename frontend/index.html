@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Importação de PDF</title>
     <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/modal_edit.css">
     </head>
     <body>
 
@@ -100,6 +101,118 @@
     </div>
   </div>
 </div>
+
+
+
+<div class="modal-overlay" id="editModal" style="display:none;">
+  <div class="modal">
+
+    <div class="modal-header">
+      <h2>Editar Registro</h2>
+      <button onclick="closeEditModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <input type="hidden" id="e_id" />
+
+      <!-- PACIENTE -->
+      <section class="modal-section">
+        <h3>Paciente</h3>
+        <div class="grid">
+          <div>
+            <label>Nome</label>
+            <input id="e_nome" />
+          </div>
+
+          <div>
+            <label>Local</label>
+            <input id="e_local" />
+          </div>
+
+          <div>
+            <label>Material Coletado</label>
+            <input id="e_material" />
+          </div>
+
+          <div>
+            <label>Microrganismo</label>
+            <input id="e_micro" />
+          </div>
+        </div>
+      </section>
+
+      <!-- CLÍNICO -->
+      <section class="modal-section">
+        <h3>Dados Clínicos</h3>
+        <div class="grid">
+          <div>
+            <label>Diagnóstico</label>
+            <input id="e_diagnostico" />
+          </div>
+
+          <div>
+            <label>Desfecho</label>
+            <input id="e_desfecho" />
+          </div>
+
+          <div>
+            <label>Notificação</label>
+            <select id="e_notificacao">
+              <option value="">—</option>
+              <option value="SIM">SIM</option>
+              <option value="NAO">NÃO</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Diálise</label>
+            <select id="e_dialise">
+              <option value="">—</option>
+              <option value="SIM">SIM</option>
+              <option value="NAO">NÃO</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- DATAS -->
+      <section class="modal-section">
+        <h3>Datas</h3>
+        <div class="grid">
+          <div>
+            <label>Data Admissão</label>
+            <input type="date" id="e_admissao" />
+          </div>
+
+          <div>
+            <label>Data Coleta</label>
+            <input type="date" id="e_coleta" />
+          </div>
+
+          <div>
+            <label>Data Encerramento</label>
+            <input type="date" id="e_encerramento" />
+          </div>
+        </div>
+      </section>
+
+      <!-- OBS -->
+      <section class="modal-section">
+        <h3>Observações</h3>
+        <textarea id="e_obs" rows="4"></textarea>
+      </section>
+
+      <!-- AÇÕES -->
+      <div class="modal-actions">
+        <button class="btn secondary" onclick="closeEditModal()">Cancelar</button>
+        <button class="btn primary" onclick="saveEdit()">Salvar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 
 

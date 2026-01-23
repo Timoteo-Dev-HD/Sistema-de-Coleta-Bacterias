@@ -10,28 +10,75 @@ async function deleteRow(id) {
   }
 }
 
-async function editRow(id) {
-  const row = recordsData.find(r => r.id === id);
+function editRow(id) {
+  const r = recordsData.find(item => item.id === id);
+  if (!r) return;
 
-  if (!row) return;
+  document.getElementById("e_id").value = r.id;
+  document.getElementById("e_nome").value = r.nome_paciente ?? "";
+  document.getElementById("e_local").value = r.local ?? "";
+  document.getElementById("e_material").value = r.material_coletada ?? "";
+  document.getElementById("e_micro").value = r.microorganismo ?? "";
 
-  const diagnostico = prompt("Diagnóstico:", row.diagnostico);
-  const desfecho = prompt("Desfecho:", row.desfecho);
+  document.getElementById("e_diagnostico").value = r.diagnostico ?? "";
+  document.getElementById("e_desfecho").value = r.desfecho ?? "";
+  document.getElementById("e_notificacao").value = r.notificacao ?? "";
+  document.getElementById("e_dialise").value = r.dialise ?? "";
 
-  if (!diagnostico) return;
+  document.getElementById("e_admissao").value = r.data_admissao?.slice(0, 10) ?? "";
+  document.getElementById("e_coleta").value = r.data_da_coleta?.slice(0, 10) ?? "";
+  document.getElementById("e_encerramento").value = r.data_encerramento?.slice(0, 10) ?? "";
+
+  document.getElementById("e_obs").value = r.observacao ?? "";
+
+  document.getElementById("editModal").style.display = "flex";
+}
+
+async function saveEdit() {
+  const id = document.getElementById("e_id").value;
+
+  // 🔹 Helper: converte "" → null
+  const emptyToNull = (v) => (v === "" ? null : v);
+
+  const payload = {
+    // ===== Paciente =====
+    nome_paciente: document.getElementById("e_nome").value || null,
+    local: document.getElementById("e_local").value || null,
+    material_coletada: document.getElementById("e_material").value || null,
+    microorganismo: document.getElementById("e_micro").value || null,
+
+    // ===== Clínico =====
+    diagnostico: document.getElementById("e_diagnostico").value || null,
+    desfecho: document.getElementById("e_desfecho").value || null,
+    notificacao: document.getElementById("e_notificacao").value || null,
+    dialise: document.getElementById("e_dialise").value || null,
+
+    // ===== Datas (⚠️ CRÍTICO) =====
+    data_admissao: emptyToNull(document.getElementById("e_admissao").value),
+    data_da_coleta: emptyToNull(document.getElementById("e_coleta").value),
+    data_encerramento: emptyToNull(document.getElementById("e_encerramento").value),
+
+    // ===== Observações =====
+    observacao: document.getElementById("e_obs").value || null
+  };
 
   try {
-    await api.put(`/registry/${id}`, {
-      diagnostico,
-      desfecho
-    });
+    await api.put(`/registry/${id}`, payload);
 
-    await loadRegistries(); // 🔄 atualiza tabela
+    closeEditModal();        // 🔒 fecha modal
+    await loadRegistries();  // 🔄 atualiza lista
+
   } catch (err) {
     console.error(err);
-    alert("Erro ao editar registro");
+    alert("Erro ao salvar alterações do registro");
   }
 }
+
+
+function closeEditModal() {
+  document.getElementById("editModal").style.display = "none";
+}
+
 
 
 function viewRow(id) {
@@ -122,5 +169,10 @@ function closeModal() {
 // 🔥 EXPOR FUNÇÕES PARA O HTML
 window.viewRow = viewRow;
 window.closeModal = closeModal;
-window.editRow = editRow;
 window.deleteRow = deleteRow;
+
+
+
+window.editRow = editRow;
+window.saveEdit = saveEdit;
+window.closeEditModal = closeEditModal;

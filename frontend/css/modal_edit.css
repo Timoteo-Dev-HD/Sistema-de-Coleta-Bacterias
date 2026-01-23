@@ -1,0 +1,210 @@
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65); /* azul escuro elegante */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+/* ===== MODAL CONTAINER ===== */
+.modal {
+  background: #ffffff;
+  width: 92%;
+  max-width: 920px;
+  max-height: 90vh;
+  border-radius: 14px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+  overflow: hidden;
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ===== MODAL HEADER ===== */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #ffffff;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-header button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.modal-header button:hover {
+  opacity: 1;
+}
+
+/* ===== MODAL BODY ===== */
+.modal-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+}
+
+/* ===== SECTIONS ===== */
+.modal-section {
+  margin-bottom: 26px;
+}
+
+.modal-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12px;
+  border-left: 4px solid #2563eb;
+  padding-left: 10px;
+}
+
+/* ===== GRID ===== */
+.modal-section .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+/* ===== LABEL + INPUT ===== */
+.modal label {
+  display: block;
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.modal input,
+.modal select,
+.modal textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.modal textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal input:focus,
+.modal textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* ===== BUTTONS ===== */
+.modal .btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.modal .btn:hover {
+  background: #f1f5f9;
+}
+
+.modal .btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.modal .btn-primary:hover {
+  background: #1e40af;
+}
+
+/* ===== FOOTER ACTIONS ===== */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* ===== ANTIBIOGRAMA TABLE ===== */
+.antibiograma {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.antibiograma th {
+  background: #f1f5f9;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px;
+  color: #334155;
+}
+
+.antibiograma td {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+}
+
+.antibiograma .sensivel {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.antibiograma .resistente {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.antibiograma .intermediario {
+  color: #d97706;
+  font-weight: 600;
+}
+
+/* ===== SCROLLBAR (BONUS) ===== */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}

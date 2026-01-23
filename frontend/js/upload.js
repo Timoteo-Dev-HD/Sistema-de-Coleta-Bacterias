@@ -27,13 +27,15 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
     input.value = "";
 
     // 🔹 4️⃣ Recarrega dados do banco (ATUALIZA A TABELA)
-    window.loadRegistries = loadRegistries();
-    window.location.reload();
+    await loadRegistries();
+    // return window.location.reload()
 
-    // 🔹 5️⃣ (opcional) Scroll para a tabela
-    document.getElementById("dataTable")
-      .scrollIntoView({ behavior: "smooth" });
+    // // 🔹 5️⃣ (opcional) Scroll para a tabela
+    // document.getElementById("dataTable")
+    //   .scrollIntoView({ behavior: "smooth" });
 
+    // return location.reload();
+    
   } catch (err) {
     console.error(err);
     badge.innerText = "Erro";

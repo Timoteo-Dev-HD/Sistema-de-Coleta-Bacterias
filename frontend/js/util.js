@@ -8,4 +8,6 @@ function formatDate(dateString) {
   return date.toLocaleDateString("pt-BR");
 }
 
-
+function emptyToNull(value) {
+  return value === "" ? null : value;
+}

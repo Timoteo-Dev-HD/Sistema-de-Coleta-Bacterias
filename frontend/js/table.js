@@ -44,6 +44,7 @@ function renderRecords(data) {
         <div><span>Diagnóstico:</span> ${row.diagnostico}</div>
         <div><span>Desfecho:</span> ${row.desfecho ?? "—"}</div>
         <div><span>Data de Inserção do dado:</span> ${formatDate(row.data_criacao)}</div>
+        <div><span>Data da Ultima Atualização do Registro:</span> ${formatDate(row.data_atulizacao)}</div>
       </div>
     `;
 
