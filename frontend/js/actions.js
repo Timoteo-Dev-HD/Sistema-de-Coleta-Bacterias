@@ -1,3 +1,29 @@
+const ANTIBIOTICOS = {
+  amicacina: "Amicacina",
+  ampicilina: "Ampicilina",
+  amoxicilina: "Amoxicilina",
+  amoxicilina_clavulanato: "Amoxicilina-Clavulanato",
+  cefalexina: "Cefalexina",
+  cefepime: "Cefepima",
+  ceftazidime: "Ceftazidima",
+  ceftriaxone: "Ceftriaxona",
+  cefuroxime: "Cefuroxima",
+  ciprofloxacino: "Ciprofloxacina",
+  ertapenem: "Ertapenem",
+  gentamicina: "Gentamicina",
+  imipenem: "Imipenem",
+  levofloxacino: "Levofloxacina",
+  meropenem: "Meropenem",
+  norfloxacina: "Norfloxacina",
+  piperacilina_tazobactam: "Piperacilina-Tazobactam",
+  polimixina_b: "Polimixina B",
+  trimetoprim_sulfametoxazol: "Trimetoprim-Sulfametoxazol",
+  vancomicina: "Vancomicina",
+  nitrofurantoina: "Nitrofurantoina",
+  ceftazidima_avibactam: "Ceftazidima-Avibactam"
+};
+
+
 async function deleteRow(id) {
   if (!confirm("Deseja excluir este registro?")) return;
 
@@ -28,8 +54,48 @@ function editRow(id) {
   document.getElementById("e_admissao").value = r.data_admissao?.slice(0, 10) ?? "";
   document.getElementById("e_coleta").value = r.data_da_coleta?.slice(0, 10) ?? "";
   document.getElementById("e_encerramento").value = r.data_encerramento?.slice(0, 10) ?? "";
+  document.getElementById("e_tempo_coleta").value = r.tempo_coletar ?? "";
 
   document.getElementById("e_obs").value = r.observacao ?? "";
+
+
+
+  const container = document.getElementById("editAntibioticos");
+  container.innerHTML = "";
+
+  Object.keys(ANTIBIOTICOS).forEach(key => {
+    const parsed = parseAntibioticoValue(r[key]);
+
+    const div = document.createElement("div");
+    div.className = "antibiotico-edit";
+
+    div.innerHTML = `
+      <label>${ANTIBIOTICOS[key]}</label>
+
+      <select id="e_${key}_status">
+        <option value="">—</option>
+        <option value="Sensível" ${parsed.status === "Sensível" ? "selected" : ""}>Sensível</option>
+        <option value="Resistente" ${parsed.status === "Resistente" ? "selected" : ""}>Resistente</option>
+        <option value="Intermediário" ${parsed.status === "Intermediário" ? "selected" : ""}>Intermediário</option>
+      </select>
+
+      <select id="e_${key}_op">
+        <option value="<=" ${parsed.operador === "<=" ? "selected" : ""}>&le;</option>
+        <option value=">=" ${parsed.operador === ">=" ? "selected" : ""}>&ge;</option>
+        <option value="=" ${parsed.operador === "=" ? "selected" : ""}>=</option>
+      </select>
+
+      <input
+        type="number"
+        step="any"
+        id="e_${key}_mic"
+        value="${parsed.mic}"
+        placeholder="MIC"
+      />
+    `;
+
+    container.appendChild(div);
+  });
 
   document.getElementById("editModal").style.display = "flex";
 }
@@ -57,10 +123,27 @@ async function saveEdit() {
     data_admissao: emptyToNull(document.getElementById("e_admissao").value),
     data_da_coleta: emptyToNull(document.getElementById("e_coleta").value),
     data_encerramento: emptyToNull(document.getElementById("e_encerramento").value),
+    
+    tempo_coletar: document.getElementById("e_tempo_coleta").value
+      ? Number(document.getElementById("e_tempo_coleta").value)
+      : null,
 
     // ===== Observações =====
     observacao: document.getElementById("e_obs").value || null
   };
+
+  Object.keys(ANTIBIOTICOS).forEach(key => {
+    const status = document.getElementById(`e_${key}_status`)?.value;
+    const op = document.getElementById(`e_${key}_op`)?.value;
+    const mic = document.getElementById(`e_${key}_mic`)?.value;
+
+    if (status && mic) {
+      payload[key] = `${status} ${op}${mic}`;
+    } else {
+      payload[key] = null;
+    }
+  });
+
 
   try {
     await api.put(`/registry/${id}`, payload);
@@ -171,7 +254,7 @@ window.viewRow = viewRow;
 window.closeModal = closeModal;
 window.deleteRow = deleteRow;
 
-
+window.parseAntibioticoValue = parseAntibioticoValue;
 
 window.editRow = editRow;
 window.saveEdit = saveEdit;

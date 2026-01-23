@@ -195,6 +195,19 @@
   font-weight: 600;
 }
 
+.antibiotico-edit {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.antibiotico-edit label {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+
 /* ===== SCROLLBAR (BONUS) ===== */
 .modal-body::-webkit-scrollbar {
   width: 8px;

@@ -39,8 +39,8 @@ function renderRecords(data) {
       <div class="record-body">
         <div><span>Data Admissão:</span> ${formatDate(row.data_admissao)}</div>
         <div><span>Data da Coleta:</span> ${formatDate(row.data_da_coleta)}</div>
-        <div><span>Data Encerramento:</span> ${formatDate(row.data_ence)}</div>
-        <div><span>Tempo Coleta:</span> ${formatDate(row.tempo_colet)}</div>
+        <div><span>Data Encerramento:</span> ${formatDate(row.data_encerramento)}</div>
+        <div><span>Tempo Coleta:</span> ${row.tempo_coletar}</div>
         <div><span>Diagnóstico:</span> ${row.diagnostico}</div>
         <div><span>Desfecho:</span> ${row.desfecho ?? "—"}</div>
         <div><span>Data de Inserção do dado:</span> ${formatDate(row.data_criacao)}</div>

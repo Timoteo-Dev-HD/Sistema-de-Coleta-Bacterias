@@ -194,8 +194,19 @@
             <label>Data Encerramento</label>
             <input type="date" id="e_encerramento" />
           </div>
+
+          <div>
+            <label>Tempo de Coleta</label>
+            <input type="number" id="e_tempo_coleta" />
+          </div>
         </div>
       </section>
+
+      <section class="modal-section">
+        <h3>Antimicrobianos</h3>
+        <div class="grid grid-3" id="editAntibioticos"></div>
+      </section>
+
 
       <!-- OBS -->
       <section class="modal-section">
@@ -206,7 +217,7 @@
       <!-- AÇÕES -->
       <div class="modal-actions">
         <button class="btn secondary" onclick="closeEditModal()">Cancelar</button>
-        <button class="btn primary" onclick="saveEdit()">Salvar</button>
+        <button class="btn btn-primary" onclick="saveEdit()">Salvar</button>
       </div>
 
     </div>
@@ -225,6 +236,7 @@
         <script src="js/export.js"></script>
 
         <!-- ordem correta -->
+         <script src="js/util.js"></script>
         <script src="js/icons.js"></script>
         <script src="js/actions.js"></script>
         <script src="js/table.js"></script>
