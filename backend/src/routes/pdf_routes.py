@@ -41,7 +41,8 @@ def upload_pdf():
                     microorganismo=proc.get("microorganismo"),
                     data_da_coleta=parse_date(proc.get("data_coleta")),
                     data_admissao=parse_date(proc.get("data_coleta")),
-                    data_criacao=data_criacao
+                    data_criacao=data_criacao,
+                    data_atualizacao=data_criacao
                 )
 
                 # 👉 AQUI ENTRA O MAPA DE ANTIBIÓTICOS
