@@ -233,4 +233,4 @@ dados = parse_pdf_procedimentos_anti(
     "/home/rafael/Projetos/Sistema-de-Coleta-Bacterias/backend/uploads/Hospital_HSLZ-HSE_-_30.12.2025.pdf"
 )
 
-print(dados[4])
+print(dados[21])

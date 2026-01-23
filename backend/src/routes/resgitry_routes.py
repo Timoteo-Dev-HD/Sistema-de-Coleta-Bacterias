@@ -7,6 +7,7 @@ from datetime import datetime
 from sqlalchemy import asc
 from src.models.registry_model import Registry
 from src.settings.extensions import db
+from src.utils.util import ANTIBIOTICOS
 
 registry_bp = Blueprint("registry", __name__)
 
@@ -63,6 +64,8 @@ def lista_registry():
                 "vancomicina": r.vancomicina,
                 "nitrofurantoina": r.nitrofurantoina,
                 "ceftazidima_avibactam": r.ceftazidima_avibactam,
+                
+                # Datas de registros
                 "data_criacao": r.data_criacao,
                 "data_atulizacao": r.data_atualizacao
             }
@@ -77,29 +80,65 @@ def lista_registry():
 
 @registry_bp.route("/registry/<int:id_registry>", methods=["PUT"])
 def update_registry(id_registry):
-    data = request.json
+    data = request.json or {}
 
     registry = Registry.query.get_or_404(id_registry)
 
+    # =========================
+    # 🔹 Helpers
+    # =========================
     def parse_date(value):
+        """
+        Converte 'YYYY-MM-DD' → date
+        Converte '', None → None
+        """
         if not value:
             return None
-        return datetime.strptime(value, "%Y-%m-%d").date()
+        try:
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        except ValueError:
+            return None
 
+    def empty_to_none(value):
+        return value if value not in ("", None) else None
+
+    # =========================
+    # 🔹 Datas
+    # =========================
     registry.data_admissao = parse_date(data.get("data_admissao"))
     registry.data_da_coleta = parse_date(data.get("data_da_coleta"))
     registry.data_encerramento = parse_date(data.get("data_encerramento"))
 
-    registry.diagnostico = data.get("diagnostico") or None
-    registry.desfecho = data.get("desfecho") or None
-    registry.notificacao = data.get("notificacao") or None
-    registry.dialise = data.get("dialise") or None
-    registry.local = data.get("local") or None
-    registry.observacao = data.get("observacao") or None
+    # =========================
+    # 🔹 Campos clínicos
+    # =========================
+    registry.tempo_coletar = empty_to_none(data.get("tempo_coletar"))
+    registry.diagnostico = empty_to_none(data.get("diagnostico"))
+    registry.desfecho = empty_to_none(data.get("desfecho"))
+    registry.notificacao = empty_to_none(data.get("notificacao"))
+    registry.dialise = empty_to_none(data.get("dialise"))
+    registry.local = empty_to_none(data.get("local"))
+    registry.observacao = empty_to_none(data.get("observacao"))
 
+    # =========================
+    # 🔹 Dados do exame
+    # =========================
+    registry.material_coletada = empty_to_none(data.get("material_coletada"))
+    registry.microorganismo = empty_to_none(data.get("microorganismo"))
+
+    for ab in ANTIBIOTICOS:
+        if ab in data:
+            setattr(registry, ab, empty_to_none(data.get(ab)))
+
+    # =========================
+    # 🔹 Commit
+    # =========================
     db.session.commit()
 
-    return jsonify({"success": True})
+    return jsonify({
+        "success": True,
+        "message": "Registro atualizado com sucesso"
+    }), 200
 
 
 @registry_bp.route("/registry/<int:id_registry>", methods=["DELETE"])

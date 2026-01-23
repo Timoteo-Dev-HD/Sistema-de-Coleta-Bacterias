@@ -8,6 +8,36 @@ from datetime import datetime
 
 load_dotenv()
 
+# =========================
+# 🔹 Antimicrobianos (🔥 PARTE IMPORTANTE)
+# =========================
+ANTIBIOTICOS = [
+        "amicacina",
+        "ampicilina",
+        "amoxicilina",
+        "amoxicilina_clavulanato",
+        "cefalexina",
+        "cefepime",
+        "ceftazidime",
+        "ceftriaxone",
+        "cefuroxime",
+        "ciprofloxacino",
+        "ertapenem",
+        "gentamicina",
+        "imipenem",
+        "levofloxacino",
+        "meropenem",
+        "norfloxacina",
+        "piperacilina_tazobactam",
+        "polimixina_b",
+        "trimetoprim_sulfametoxazol",
+        "vancomicina",
+        "nitrofurantoina",
+        "ceftazidima_avibactam"
+    ]
+
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in os.getenv("ALLOWED_EXTENSIONS")
