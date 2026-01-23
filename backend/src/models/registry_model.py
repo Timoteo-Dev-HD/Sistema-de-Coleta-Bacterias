@@ -84,6 +84,7 @@ class Registry(db.Model):
 
     # Data de criação do registro
     data_criacao = db.Column(db.Date, nullable=True)
+    data_atualizacao = db.Column(db.Date, nullable=True)
 
     def __repr__(self):
         return f"Registry: {self.nome_paciente} - {self.data_admissao}"
