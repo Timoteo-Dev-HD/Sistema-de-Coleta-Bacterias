@@ -53,28 +53,41 @@ function renderRecords(data) {
 }
 
 
-function filterRecords(query) {
-  const q = query.trim().toLowerCase();
+function filterRecords() {
+  const nameQuery = document.getElementById("searchInput").value
+    .trim()
+    .toLowerCase();
 
-  // 🔹 Se o campo estiver vazio, mostra tudo
-  if (!q) {
-    renderRecords(allRecords);
-    return ;
-  }
+  const monthValue = document.getElementById("monthFilter").value;
 
-  const filtered = allRecords.filter(r =>
-    r.nome_paciente.toLowerCase().includes(q)
-  );
+  const filtered = allRecords.filter(r => {
+    // 🔎 FILTRO POR NOME
+    const matchName = r.nome_paciente
+      ?.toLowerCase()
+      .includes(nameQuery);
+
+    // 📅 FILTRO POR MÊS
+    let matchMonth = true;
+
+    if (monthValue !== "") {
+      const date = r.data_da_coleta || r.data_admissao;
+      if (!date) return false;
+
+      const recordMonth = new Date(date).getMonth();
+      matchMonth = recordMonth === Number(monthValue);
+    }
+
+    return matchName && matchMonth;
+  });
 
   renderRecords(filtered);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
+  const monthFilter = document.getElementById("monthFilter");
 
-  if (!searchInput) return;
-
-  searchInput.addEventListener("input", (e) => {
-    filterRecords(e.target.value);
-  });
+  searchInput.addEventListener("input", filterRecords);
+  monthFilter.addEventListener("change", filterRecords);
 });
+
