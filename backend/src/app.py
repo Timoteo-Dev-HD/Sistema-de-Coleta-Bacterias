@@ -19,9 +19,12 @@ def create_app():
     
     # Registar as routes
     from src.routes.resgitry_routes import registry_bp
+    from src.routes.export_routes import export_bp
     from src.routes.pdf_routes import pdf_bp
     
+    
     app.register_blueprint(registry_bp)
+    app.register_blueprint(export_bp)
     app.register_blueprint(pdf_bp)
 
     return app
