@@ -13,8 +13,7 @@ registry_bp = Blueprint("registry", __name__)
 
 @registry_bp.route("/registry", methods=["POST"])
 def create_registry():
-    return "hello world!";
-
+    pass
 
 @registry_bp.route("/registry", methods=["GET"])
 def lista_registry():

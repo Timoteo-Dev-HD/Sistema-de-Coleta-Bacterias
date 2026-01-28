@@ -66,6 +66,7 @@ class Registry(db.Model):
     anfotericina_b = db.Column(db.String(50), nullable=True)
     fluconazol = db.Column(db.String(50), nullable=True)
     ketoconazol = db.Column(db.String(50), nullable=True)
+    nazol = db.Column(db.String(50), nullable=True)
     voriconazol = db.Column(db.String(50), nullable=True)
     nitrofurantoina = db.Column(db.String(50), nullable=True)
     aztreonam = db.Column(db.String(50), nullable=True)

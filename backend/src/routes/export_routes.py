@@ -33,6 +33,7 @@ COLUMNS = [
     "CEFTIBUFEN", "OBSERVAÇÃO"
 ]
 
+
 @export_bp.route("/export", methods=["GET"])
 def export_registry_excel():
     month = request.args.get("month", type=int)
@@ -56,20 +57,17 @@ def export_registry_excel():
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Relatório"
+    ws.title = f"Relatório {month:02d}-{year}"
 
-    # 🔹 Cabeçalho
     ws.append(COLUMNS)
 
-    # 🔹 Função para formatar datas
     def fmt_date(d):
-        return d.strftime("%d/%m/%Y") if d else None
+        return d.strftime("%d/%m/%Y") if d else ""
 
-    # 🔹 Dados
     for r in registros:
         ws.append([
             r.nome_paciente,
-            None,  # DATA NASC (se não existir no banco)
+            "",  # Data nasc (não existe no modelo)
             fmt_date(r.data_admissao),
             fmt_date(r.data_da_coleta),
             fmt_date(r.data_encerramento),
@@ -141,7 +139,7 @@ def export_registry_excel():
     wb.save(output)
     output.seek(0)
 
-    filename = f"relatorio_{month:02d}_{year}.xlsx"
+    filename = f"relatorio_{month:02d}-{year}.xlsx"
 
     return send_file(
         output,
