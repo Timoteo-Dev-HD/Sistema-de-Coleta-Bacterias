@@ -81,7 +81,7 @@ class Registry(db.Model):
     ceftibufen = db.Column(db.String(50), nullable=True)
 
     # Campo livre
-    observacao = db.Column(db.String(255), nullable=True)
+    observacao = db.Column(db.Text, nullable=True)
 
     # Data de criação do registro
     data_criacao = db.Column(db.Date, nullable=True)
