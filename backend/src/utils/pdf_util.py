@@ -2,6 +2,103 @@ import re
 from PyPDF2 import PdfReader
 
 
+# =====================================================
+# NORMALIZA TEXTO
+# =====================================================
+
+def normalize(text: str) -> str:
+    return re.sub(r"\s+", " ", text.replace("\n", " ")).strip()
+
+
+# =====================================================
+# PARSE DO MATERIAL COMPLETO
+# =====================================================
+
+def parse_material_completo(material_texto: str) -> dict:
+    dados = {}
+
+    # MATERIAL
+    m_material = re.search(
+        r"Material:\s*(.*?)\s*Data coleta:",
+        material_texto,
+        re.DOTALL
+    )
+    dados["material"] = m_material.group(1).strip() if m_material else None
+
+    # DATA COLETA
+    m_data = re.search(r"Data coleta:\s*([\d/]+)", material_texto)
+    dados["data_coleta"] = m_data.group(1) if m_data else None
+
+    # MICRORGANISMO (PARA NO PRÓXIMO BLOCO)
+    m_micro = re.search(
+        r"Resultado:\s*(.*?)\s*(?:Antimicrobiano|Observações do isolado:)",
+        material_texto,
+        re.DOTALL
+    )
+    dados["microorganismo"] = (
+        m_micro.group(1).replace("~", "").strip()
+        if m_micro else None
+    )
+
+    # OBSERVAÇÃO (LIMITADA AO BLOCO)
+    m_obs = re.search(
+        r"Observações do isolado:\s*(.*?)(?:Procedimento:|O\.S\.:|$)",
+        material_texto,
+        re.DOTALL
+    )
+    dados["observacao"] = (
+        m_obs.group(1).strip()
+        if m_obs else None
+    )
+
+    # ANTIBIOGRAMA
+    bloco = re.search(
+        r"Antimicrobiano\s*(.*?)\s*(?:Observações do isolado:|$)",
+        material_texto,
+        re.DOTALL
+    )
+
+    antibiograma = []
+
+    if bloco:
+        bloco = bloco.group(1)
+
+        nomes = re.findall(
+            r"(Amicacina|Amoxicilina-Clavulanato \(f\)|Ampicilina|Cefepima|"
+            r"Ceftazidima|Ceftriaxona|Cefuroxima|Ciprofloxacina|Ertapenem|"
+            r"Gentamicina|Imipenem|Levofloxacina|Meropenem|"
+            r"Piperacilina-Tazobactam|Trimetoprim-Sulfametoxazol|"
+            r"Ceftazidima-Avibactam|Vancomicina|Tigeciclina|Teicoplanina|"
+            r"Fluconazol|Anfotericina B)",
+            bloco
+        )
+
+        classificacoes = re.findall(
+            r"(Sensível|Resistente|Intermediário|Não definido)",
+            bloco
+        )
+
+        mics = re.findall(
+            r"(<=|>=|<|>)?\s*[\d.,/]+",
+            bloco
+        )
+
+        for i, nome in enumerate(nomes):
+            antibiograma.append({
+                "nome": nome.replace(" (f)", ""),
+                "classificacao": classificacoes[i] if i < len(classificacoes) else None,
+                "mic": mics[i] if i < len(mics) else None
+            })
+
+    dados["antibiograma"] = antibiograma
+    return dados
+
+
+
+# =====================================================
+# PARSE DO PDF COMPLETO
+# =====================================================
+
 def parse_pdf_procedimentos_anti(path: str) -> list:
     reader = PdfReader(path)
 
@@ -11,9 +108,9 @@ def parse_pdf_procedimentos_anti(path: str) -> list:
         if t:
             texto += "\n" + t
 
-    texto = re.sub(r"\s+", " ", texto)
-
+    texto = normalize(texto)
     blocos = re.split(r"(?=O\.S\.:)", texto)
+
     registros = []
 
     for bloco in blocos:
@@ -32,103 +129,16 @@ def parse_pdf_procedimentos_anti(path: str) -> list:
         procedimentos = re.split(r"(?=Procedimento:)", bloco)
 
         for proc in procedimentos[1:]:
-            item["procedimentos"].append(
-                extrair_material_antibiograma(proc)
+            m_material = re.search(
+                r"Material:\s*(.*?)\s*(?=Procedimento:|O\.S\.:|$)",
+                proc,
+                re.DOTALL
             )
+            if m_material:
+                item["procedimentos"].append(
+                    parse_material_completo(m_material.group(1))
+                )
 
         registros.append(item)
 
     return registros
-
-def extrair_material_antibiograma(texto_proc: str) -> dict:
-    material = re.search(
-        r"Material:\s*(.*?)\s*Data coleta",
-        texto_proc
-    )
-
-    data = re.search(
-        r"Data coleta:\s*([\d/]+)",
-        texto_proc
-    )
-
-    micro = re.search(
-        r"Resultado:\s*([A-Za-zÀ-ú\s~\.]+?)\s*Antimicrobiano",
-        texto_proc
-    )
-
-    obs = re.search(
-        r"Observações do isolado:\s*(.+)",
-        texto_proc
-    )
-
-    antibiograma = []
-
-    for nome, classif in re.findall(
-        r"(Amicacina|Ampicilina|Amoxicilina-Clavulanato|Aztreonam|Cefepima|Ceftazidima|Ceftriaxona|Cefuroxima|Ciprofloxacina|Ertapenem|Gentamicina|Imipenem|Levofloxacina|Meropenem|Norfloxacina|Piperacilina-Tazobactam|Polimixina B|Trimetoprim-Sulfametoxazol|Vancomicina|Linezolid|Tigeciclina|Teicoplanina|Fluconazol|Anfotericina B)\s+(Sensível|Resistente|Intermediário|Não definido)",
-        texto_proc,
-        re.IGNORECASE
-    ):
-        antibiograma.append({
-            "nome": nome,
-            "classificacao": classif
-        })
-
-    return {
-        "material": material.group(1).strip() if material else None,
-        "data_coleta": data.group(1) if data else None,
-        "microorganismo": micro.group(1).replace("~", "").strip() if micro else None,
-        "observacao": obs.group(1).strip() if obs else None,
-        "antibiograma": antibiograma
-    }
-
-ANTIBIOTICO_COL_MAP = {
-    "Amicacina": "amicacina",
-    "Ampicilina": "ampicilina",
-    "Amoxicilina-Clavulanato": "amoxicilina_clavulanato",
-    "Aztreonam": "aztreonam",
-    "Cefepima": "cefepime",
-    "Ceftazidima": "ceftazidime",
-    "Ceftriaxona": "ceftriaxone",
-    "Cefuroxima": "cefuroxime",
-    "Ciprofloxacina": "ciprofloxacino",
-    "Ertapenem": "ertapenem",
-    "Gentamicina": "gentamicina",
-    "Imipenem": "imipenem",
-    "Levofloxacina": "levofloxacino",
-    "Meropenem": "meropenem",
-    "Norfloxacina": "norfloxacina",
-    "Piperacilina-Tazobactam": "piperacilina_tazobactam",
-    "Polimixina B": "polimixina_b",
-    "Trimetoprim-Sulfametoxazol": "trimetoprim_sulfametoxazol",
-    "Vancomicina": "vancomicina",
-    "Linezolid": "linezolida",
-    "Tigeciclina": "tigeciclina",
-    "Teicoplanina": "teicoplanina",
-    "Fluconazol": "fluconazol",
-    "Anfotericina B": "anfotericina_b",
-}
-
-
-def apply_antibiogram_to_registry(registry, antibiograma: list):
-    for item in antibiograma:
-
-        # CASO 1: dict com chave "nome"
-        if isinstance(item, dict) and "nome" in item:
-            nome = item["nome"]
-            classificacao = item.get("classificacao")
-
-        # CASO 2: dict { "Amicacina": "Sensível" }
-        elif isinstance(item, dict) and len(item) == 1:
-            nome, classificacao = next(iter(item.items()))
-
-        # CASO 3: tupla ("Amicacina", "Sensível")
-        elif isinstance(item, (list, tuple)) and len(item) >= 2:
-            nome, classificacao = item[0], item[1]
-
-        else:
-            # formato desconhecido → ignora
-            continue
-
-        coluna = ANTIBIOTICO_COL_MAP.get(nome)
-        if coluna:
-            setattr(registry, coluna, classificacao)

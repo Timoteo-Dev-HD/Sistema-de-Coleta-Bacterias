@@ -2,49 +2,48 @@ from flask import Blueprint, request, jsonify
 from datetime import datetime
 import traceback
 
-from src.utils.util import parse_pdf, save_file, parse_date 
-from src.utils.util import parse_pdf_procedimentos_anti
-from src.utils.pdf_util import apply_antibiogram_to_registry
+from src.utils.pdf_util import parse_pdf_procedimentos_anti
+from src.utils.apply_antibiogram import apply_antibiogram_to_registry
+from src.utils.util import save_file, parse_date
 from src.settings.extensions import db
 from src.models.registry_model import Registry
 
-
 pdf_bp = Blueprint("pdf", __name__)
+
 
 @pdf_bp.route("/pdf/upload", methods=["POST"])
 def upload_pdf():
     try:
-        print("➡️ Requisição recebida")
-
         file = request.files.get("file")
         if not file:
             return {"error": "Arquivo não enviado"}, 400
 
         path = save_file(file)
-        print("💾 Arquivo salvo em:", path)
-
         registros = parse_pdf_procedimentos_anti(path)
-        print("📊 Registros extraídos:", len(registros))
 
         total = 0
-        data_criacao = datetime.now().date()
+        hoje = datetime.now().date()
 
         for os_item in registros:
             for proc in os_item["procedimentos"]:
 
+                # 🔒 proteção de tamanho (mesmo com Text)
+                observacao = proc.get("observacao")
+                if observacao:
+                    observacao = observacao[:5000]
+
                 registry = Registry(
-                    nome_paciente=os_item["paciente"],
+                    nome_paciente=os_item.get("paciente"),
                     local=os_item.get("unidade"),
                     material_coletada=proc.get("material"),
                     microorganismo=proc.get("microorganismo"),
                     data_da_coleta=parse_date(proc.get("data_coleta")),
                     data_admissao=parse_date(proc.get("data_coleta")),
-                    data_criacao=data_criacao,
-                    data_atualizacao=data_criacao,
-                    observacao=proc.get("observacao")
+                    observacao=observacao,
+                    data_criacao=hoje,
+                    data_atualizacao=hoje
                 )
 
-                # 🔥 aplica antibióticos automaticamente
                 apply_antibiogram_to_registry(
                     registry,
                     proc.get("antibiograma", [])
@@ -64,3 +63,4 @@ def upload_pdf():
         db.session.rollback()
         traceback.print_exc()
         return {"error": str(e)}, 500
+
