@@ -4,13 +4,12 @@ import traceback
 
 from src.utils.util import parse_pdf, save_file, parse_date 
 from src.utils.util import parse_pdf_procedimentos_anti
-from src.utils.util import apply_antibiogram_to_registry
+from src.utils.pdf_util import apply_antibiogram_to_registry
 from src.settings.extensions import db
 from src.models.registry_model import Registry
 
 
 pdf_bp = Blueprint("pdf", __name__)
-
 
 @pdf_bp.route("/pdf/upload", methods=["POST"])
 def upload_pdf():
@@ -27,7 +26,6 @@ def upload_pdf():
         registros = parse_pdf_procedimentos_anti(path)
         print("📊 Registros extraídos:", len(registros))
 
-        salvos = []
         total = 0
         data_criacao = datetime.now().date()
 
@@ -42,10 +40,11 @@ def upload_pdf():
                     data_da_coleta=parse_date(proc.get("data_coleta")),
                     data_admissao=parse_date(proc.get("data_coleta")),
                     data_criacao=data_criacao,
-                    data_atualizacao=data_criacao
+                    data_atualizacao=data_criacao,
+                    observacao=proc.get("observacao")
                 )
 
-                # 👉 AQUI ENTRA O MAPA DE ANTIBIÓTICOS
+                # 🔥 aplica antibióticos automaticamente
                 apply_antibiogram_to_registry(
                     registry,
                     proc.get("antibiograma", [])
@@ -63,6 +62,5 @@ def upload_pdf():
 
     except Exception as e:
         db.session.rollback()
-        print("❌ ERRO AO PROCESSAR PDF")
         traceback.print_exc()
         return {"error": str(e)}, 500
