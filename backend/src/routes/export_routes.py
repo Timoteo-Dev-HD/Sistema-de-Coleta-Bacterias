@@ -5,6 +5,10 @@ from datetime import date
 from sqlalchemy import extract
 from dotenv import load_dotenv
 
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
+
+
 from src.models.registry_model import Registry
 from src.settings.extensions import db
 
@@ -60,6 +64,32 @@ def export_registry_excel():
     ws.title = f"Relatório {month:02d}-{year}"
 
     ws.append(COLUMNS)
+    
+    # 🎨 Estilos
+    header_fill = PatternFill(
+        start_color="FFC0CB",  # Rosa claro
+        end_color="FFC0CB",
+        fill_type="solid"
+    )
+
+    header_font = Font(
+        bold=True,
+        color="000000"  # Preto
+    )
+
+    header_alignment = Alignment(
+        horizontal="center",
+        vertical="center",
+        wrap_text=True
+    )
+
+    # 🎯 Aplicar estilo no cabeçalho
+    for col_idx in range(1, len(COLUMNS) + 1):
+        cell = ws.cell(row=1, column=col_idx)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+
 
     def fmt_date(d):
         return d.strftime("%d/%m/%Y") if d else ""
