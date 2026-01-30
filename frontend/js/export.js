@@ -9,7 +9,7 @@ document.getElementById("exportBtn").addEventListener("click", () => {
 
   // Backend espera mês 1–12
   const monthApi = Number(month) + 1;
-  const year = new Date().getFullYear() - 1;
+  const year = new Date().getFullYear();
 
   // ⚠️ AQUI É O PONTO-CHAVE
   const url = `http://127.0.0.1:5000/registry/export?month=${monthApi}&year=${year}`;
