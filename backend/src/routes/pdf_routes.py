@@ -18,32 +18,31 @@ def upload_pdf():
         if not file:
             return {"error": "Arquivo não enviado"}, 400
 
+        # 🔹 Salva o PDF
         path = save_file(file)
+
+        # 🔹 Parse completo (PACIENTE → PROCEDIMENTOS → MATERIAL)
         registros = parse_pdf_procedimentos_anti(path)
 
-        total = 0
         hoje = datetime.now().date()
+        total = 0
 
-        for os_item in registros:
-            for proc in os_item["procedimentos"]:
-
-                # 🔒 proteção de tamanho (mesmo com Text)
-                observacao = proc.get("observacao")
-                if observacao:
-                    observacao = observacao[:5000]
+        for paciente in registros:
+            for proc in paciente["procedimentos"]:
 
                 registry = Registry(
-                    nome_paciente=os_item.get("paciente"),
-                    local=os_item.get("unidade"),
-                    material_coletada=proc.get("material"),
+                    nome_paciente=paciente.get("paciente"),
+                    local=paciente.get("unidade"),
+                    material_coletada=proc.get("material"),   # ✅ AQUI
                     microorganismo=proc.get("microorganismo"),
                     data_da_coleta=parse_date(proc.get("data_coleta")),
                     data_admissao=parse_date(proc.get("data_coleta")),
-                    observacao=observacao,
+                    observacao=proc.get("observacao"),
                     data_criacao=hoje,
                     data_atualizacao=hoje
                 )
 
+                # 🔬 Aplica antibiograma
                 apply_antibiogram_to_registry(
                     registry,
                     proc.get("antibiograma", [])
@@ -63,4 +62,3 @@ def upload_pdf():
         db.session.rollback()
         traceback.print_exc()
         return {"error": str(e)}, 500
-

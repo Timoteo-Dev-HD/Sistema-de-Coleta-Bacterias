@@ -5,7 +5,6 @@ from PyPDF2 import PdfReader
 # =====================================================
 # NORMALIZA TEXTO
 # =====================================================
-
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.replace("\n", " ")).strip()
 
@@ -13,23 +12,25 @@ def normalize(text: str) -> str:
 # =====================================================
 # PARSE DO MATERIAL COMPLETO
 # =====================================================
-
 def parse_material_completo(material_texto: str) -> dict:
     dados = {}
 
-    # MATERIAL
+    # 🔹 MATERIAL (funciona com ou sem Data coleta)
     m_material = re.search(
-        r"Material:\s*(.*?)\s*Data coleta:",
+        r"Material:\s*(.*?)(?:\s*Data coleta:|$)",
         material_texto,
         re.DOTALL
     )
     dados["material"] = m_material.group(1).strip() if m_material else None
 
-    # DATA COLETA
-    m_data = re.search(r"Data coleta:\s*([\d/]+)", material_texto)
-    dados["data_coleta"] = m_data.group(1) if m_data else None
+    # 🔹 DATA DA COLETA (com ou sem hora)
+    m_data = re.search(
+        r"Data coleta:\s*([\d/]+(?:\s*[\d:]+)?)",
+        material_texto
+    )
+    dados["data_coleta"] = m_data.group(1).strip() if m_data else None
 
-    # MICRORGANISMO (PARA NO PRÓXIMO BLOCO)
+    # 🔹 MICRORGANISMO
     m_micro = re.search(
         r"Resultado:\s*(.*?)\s*(?:Antimicrobiano|Observações do isolado:)",
         material_texto,
@@ -40,18 +41,17 @@ def parse_material_completo(material_texto: str) -> dict:
         if m_micro else None
     )
 
-    # OBSERVAÇÃO (LIMITADA AO BLOCO)
+    # 🔹 OBSERVAÇÕES
     m_obs = re.search(
         r"Observações do isolado:\s*(.*?)(?:Procedimento:|O\.S\.:|$)",
         material_texto,
         re.DOTALL
     )
-    dados["observacao"] = (
-        m_obs.group(1).strip()
-        if m_obs else None
-    )
+    dados["observacao"] = m_obs.group(1).strip() if m_obs else None
 
-    # ANTIBIOGRAMA
+    # =================================================
+    # 🔹 ANTIBIOGRAMA
+    # =================================================
     bloco = re.search(
         r"Antimicrobiano\s*(.*?)\s*(?:Observações do isolado:|$)",
         material_texto,
@@ -90,15 +90,17 @@ def parse_material_completo(material_texto: str) -> dict:
                 "mic": mics[i] if i < len(mics) else None
             })
 
+    print("🧪 MATERIAL:", dados["material"])
+    print("🧪 DATA:", dados["data_coleta"])
+    print("🧪 MICRO:", dados["microorganismo"])
+
     dados["antibiograma"] = antibiograma
     return dados
-
 
 
 # =====================================================
 # PARSE DO PDF COMPLETO
 # =====================================================
-
 def parse_pdf_procedimentos_anti(path: str) -> list:
     reader = PdfReader(path)
 
@@ -109,6 +111,8 @@ def parse_pdf_procedimentos_anti(path: str) -> list:
             texto += "\n" + t
 
     texto = normalize(texto)
+
+    # 🔹 Quebra por O.S.
     blocos = re.split(r"(?=O\.S\.:)", texto)
 
     registros = []
@@ -126,18 +130,16 @@ def parse_pdf_procedimentos_anti(path: str) -> list:
             "procedimentos": []
         }
 
+        # 🔹 Quebra por procedimento
         procedimentos = re.split(r"(?=Procedimento:)", bloco)
 
         for proc in procedimentos[1:]:
-            m_material = re.search(
-                r"Material:\s*(.*?)\s*(?=Procedimento:|O\.S\.:|$)",
-                proc,
-                re.DOTALL
-            )
-            if m_material:
-                item["procedimentos"].append(
-                    parse_material_completo(m_material.group(1))
-                )
+            dados = parse_material_completo(proc)
+
+            # só adiciona se realmente achou material ou micro
+            if dados.get("material") or dados.get("microorganismo"):
+                item["procedimentos"].append(dados)
+
 
         registros.append(item)
 
