@@ -35,6 +35,7 @@ def upload_pdf():
                     local=paciente.get("unidade"),
                     material_coletada=proc.get("material"),   # ✅ AQUI
                     microorganismo=proc.get("microorganismo"),
+                    data_nascimento=parse_date(paciente.get("data_nascimento")),
                     data_da_coleta=parse_date(proc.get("data_coleta")),
                     data_admissao=parse_date(proc.get("data_coleta")),
                     observacao=proc.get("observacao"),

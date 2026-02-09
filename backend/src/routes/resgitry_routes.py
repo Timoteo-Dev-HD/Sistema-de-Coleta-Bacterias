@@ -28,6 +28,7 @@ def lista_registry():
             {
                 "id": r.id,
                 "nome_paciente": r.nome_paciente,
+                "data_nascimento": r.data_nascimento.isoformat() if r.data_nascimento else None,
                 "data_admissao": r.data_admissao.isoformat() if r.data_admissao else None,
                 "data_da_coleta": r.data_da_coleta.isoformat() if r.data_da_coleta else None,
                 "data_encerramento": r.data_encerramento.isoformat() if r.data_encerramento else None,

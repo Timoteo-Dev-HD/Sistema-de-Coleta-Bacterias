@@ -122,13 +122,19 @@ def parse_pdf_procedimentos_anti(path: str) -> list:
             continue
 
         paciente = re.search(r"Paciente:\s*([A-ZÀ-Ú\s]+)", bloco)
+        data_nasc = re.search(r"Data nasc\.\:\s*([\d/]+)", bloco)
         unidade = re.search(r"Unidade coleta:\s*(.*?)\s*Telefone", bloco)
 
         item = {
             "paciente": paciente.group(1).strip() if paciente else None,
             "unidade": unidade.group(1).strip() if unidade else None,
+            "data_nascimento": data_nasc.group(1) if data_nasc else None,
             "procedimentos": []
         }
+
+        print("👤 PACIENTE:", item["paciente"])
+        print("🎂 NASC:", item["data_nascimento"])
+
 
         # 🔹 Quebra por procedimento
         procedimentos = re.split(r"(?=Procedimento:)", bloco)
