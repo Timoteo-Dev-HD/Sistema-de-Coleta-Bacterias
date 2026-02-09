@@ -37,7 +37,7 @@ function renderRecords(data) {
       </div>
 
       <div class="record-body">
-        <div><span>Data Admissão:</span> ${formatDate(row.data_admissao)}</div>
+        <div><span>Data Nascimento:</span> ${formatDate(row.data_nascimento)}</div>
         <div><span>Data da Coleta:</span> ${formatDate(row.data_da_coleta)}</div>
         <div><span>Data Encerramento:</span> ${formatDate(row.data_encerramento)}</div>
         <div><span>Tempo Coleta:</span> ${row.tempo_coletar}</div>

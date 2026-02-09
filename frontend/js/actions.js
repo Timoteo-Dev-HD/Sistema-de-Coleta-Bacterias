@@ -51,7 +51,7 @@ function editRow(id) {
   document.getElementById("e_notificacao").value = r.notificacao ?? "";
   document.getElementById("e_dialise").value = r.dialise ?? "";
 
-  document.getElementById("e_admissao").value = r.data_admissao?.slice(0, 10) ?? "";
+  document.getElementById("e_nascimento").value = r.data_admissao?.slice(0, 10) ?? "";
   document.getElementById("e_coleta").value = r.data_da_coleta?.slice(0, 10) ?? "";
   document.getElementById("e_encerramento").value = r.data_encerramento?.slice(0, 10) ?? "";
   document.getElementById("e_tempo_coleta").value = r.tempo_coletar ?? "";
@@ -177,7 +177,7 @@ function viewRow(id) {
   document.getElementById("m_micro").innerText = r.microorganismo ?? "—";
 
   // Datas
-  document.getElementById("m_admissao").innerText = formatDate(r.data_admissao);
+  document.getElementById("m_nascimento").innerText = formatDate(r.data_nascimento);
   document.getElementById("m_coleta").innerText = formatDate(r.data_da_coleta);
   document.getElementById("m_ence").innerText = formatDate(r.data_encerramento);
   document.getElementById("m_insert").innerHTML = formatDate(r.data_criacao);
