@@ -8,6 +8,21 @@ from PyPDF2 import PdfReader
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.replace("\n", " ")).strip()
 
+# =====================================================
+# NOME DE PACIENTE
+# =====================================================
+def clean_patient_name(nome: str) -> str:
+    if not nome:
+        return nome
+
+    nome = nome.strip()
+    
+    nome = re.sub(r"\s+S$", "", nome)
+    
+    nome = re.sub(r"\s+", " ", nome)
+    
+    return nome
+
 
 # =====================================================
 # PARSE DO MATERIAL COMPLETO
@@ -90,9 +105,9 @@ def parse_material_completo(material_texto: str) -> dict:
                 "mic": mics[i] if i < len(mics) else None
             })
 
-    print("🧪 MATERIAL:", dados["material"])
-    print("🧪 DATA:", dados["data_coleta"])
-    print("🧪 MICRO:", dados["microorganismo"])
+    # print("🧪 MATERIAL:", dados["material"])
+    # print("🧪 DATA:", dados["data_coleta"])
+    # print("🧪 MICRO:", dados["microorganismo"])
 
     dados["antibiograma"] = antibiograma
     return dados
@@ -121,19 +136,25 @@ def parse_pdf_procedimentos_anti(path: str) -> list:
         if not bloco.startswith("O.S.:"):
             continue
 
-        paciente = re.search(r"Paciente:\s*([A-ZÀ-Ú\s]+)", bloco)
+        paciente_match = re.search(r"Paciente:\s*([A-ZÀ-Ú\s]+)", bloco)
+
+        paciente = (
+            clean_patient_name(paciente_match.group(1))
+            if paciente_match else None
+        )
+
         data_nasc = re.search(r"Data nasc\.\:\s*([\d/]+)", bloco)
         unidade = re.search(r"Unidade coleta:\s*(.*?)\s*Telefone", bloco)
 
         item = {
-            "paciente": paciente.group(1).strip() if paciente else None,
+            "paciente": paciente,
             "unidade": unidade.group(1).strip() if unidade else None,
             "data_nascimento": data_nasc.group(1) if data_nasc else None,
             "procedimentos": []
         }
 
         print("👤 PACIENTE:", item["paciente"])
-        print("🎂 NASC:", item["data_nascimento"])
+        # print("🎂 NASC:", item["data_nascimento"])
 
 
         # 🔹 Quebra por procedimento
