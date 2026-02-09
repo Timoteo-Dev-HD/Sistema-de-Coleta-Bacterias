@@ -97,7 +97,7 @@ def export_registry_excel():
     for r in registros:
         ws.append([
             r.nome_paciente,
-            "",  # Data nasc (não existe no modelo)
+            fmt_date(r.data_nascimento),  # Data nasc (não existe no modelo)
             fmt_date(r.data_admissao),
             fmt_date(r.data_da_coleta),
             fmt_date(r.data_encerramento),
