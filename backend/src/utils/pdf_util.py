@@ -79,12 +79,21 @@ def parse_material_completo(material_texto: str) -> dict:
         bloco = bloco.group(1)
 
         nomes = re.findall(
-            r"(Amicacina|Amoxicilina-Clavulanato \(f\)|Ampicilina|Cefepima|"
-            r"Ceftazidima|Ceftriaxona|Cefuroxima|Ciprofloxacina|Ertapenem|"
-            r"Gentamicina|Imipenem|Levofloxacina|Meropenem|"
-            r"Piperacilina-Tazobactam|Trimetoprim-Sulfametoxazol|"
-            r"Ceftazidima-Avibactam|Vancomicina|Tigeciclina|Teicoplanina|"
-            r"Fluconazol|Anfotericina B)",
+            r"(Amicacina|Ampicilina|Amoxicilina|Amoxicilina-Clavulanato \(f\)|"
+            r"Ampicilina-Sulbactam|Azitromicina|Penicilina|Oxacilina|"
+            r"Cefalexina|Cefazolina|Cefepima|Cefoxitina|Ceftazidima|"
+            r"Ceftriaxona|Cefuroxima|Cefotaxime|Ceftibufen|Ceftarolina|"
+            r"Ciprofloxacina|Levofloxacina|Moxifloxacina|Ofloxacina|Norfloxacina|"
+            r"Eritromicina|Clindamicina|Linezolida|"
+            r"Imipenem|Meropenem|Ertapenem|"
+            r"Gentamicina|Estreptomicina|Amicacina|"
+            r"Daptomicina|Tigeciclina|Minociclina|Tetraciclina|Rifampicina|"
+            r"Polimixina B|Colistina|Cloranfenicol|Aztreonam|Nitrofurantoina|"
+            r"Trimetoprim-Sulfametoxazol|"
+            r"Piperacilina-Tazobactam|"
+            r"Ceftazidima-Avibactam|Ceftolozano-Tazobactam|"
+            r"Vancomicina|Teicoplanina|"
+            r"Anfotericina B|Fluconazol|Ketoconazol|Voriconazol|Nazol)",
             bloco
         )
 
