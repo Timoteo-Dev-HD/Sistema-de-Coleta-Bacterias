@@ -98,7 +98,8 @@ def export_registry_excel():
         ws.append([
             r.nome_paciente,
             fmt_date(r.data_nascimento),  # Data nasc (não existe no modelo)
-            fmt_date(r.data_admissao),
+            # fmt_date(r.data_admissao)
+            None,
             fmt_date(r.data_da_coleta),
             fmt_date(r.data_encerramento),
             r.tempo_coletar,
