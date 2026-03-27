@@ -45,7 +45,7 @@ class Registry(db.Model):
     gentamicina = db.Column(db.String(50), nullable=True)
     imipenem = db.Column(db.String(50), nullable=True)
     levofloxacino = db.Column(db.String(50), nullable=True)
-    linezolida = db.Column(db.String(50), nullable=True)
+    linezolid = db.Column(db.String(50), nullable=True)
     moxifloxacina = db.Column(db.String(50), nullable=True)
     oxacilina = db.Column(db.String(50), nullable=True)
     ofloxacina = db.Column(db.String(50), nullable=True)
