@@ -64,6 +64,7 @@ def lista_registry():
                 "vancomicina": r.vancomicina,
                 "nitrofurantoina": r.nitrofurantoina,
                 "ceftazidima_avibactam": r.ceftazidima_avibactam,
+                "linezolid": r.linezolid,
                 
                 # Datas de registros
                 "data_criacao": r.data_criacao,

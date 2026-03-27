@@ -84,7 +84,7 @@ def parse_material_completo(material_texto: str) -> dict:
             r"Cefalexina|Cefazolina|Cefepima|Cefoxitina|Ceftazidima|"
             r"Ceftriaxona|Cefuroxima|Cefotaxime|Ceftibufen|Ceftarolina|"
             r"Ciprofloxacina|Levofloxacina|Moxifloxacina|Ofloxacina|Norfloxacina|"
-            r"Eritromicina|Clindamicina|Linezolida|"
+            r"Eritromicina|Clindamicina|Linezolid|"
             r"Imipenem|Meropenem|Ertapenem|"
             r"Gentamicina|Estreptomicina|Amicacina|"
             r"Daptomicina|Tigeciclina|Minociclina|Tetraciclina|Rifampicina|"
